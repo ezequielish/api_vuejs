@@ -2,27 +2,49 @@
   #app
     img(src='./assets/logo.png')
     h1 musicon
+    select(v-model="selectedCountry")
+      option(v-for="country in countries" v-bind:value="country.value") {{ country.name }}
     ul
-     li(v-for="artist in artists") {{ artist.name }}
+     artist(v-for="artist in artists" :artist="artist"  :key="artist.mbid")
 </template>
 
 <script>
-// import HelloWorld from './components/HelloWorld.vue'
+import Artist from './components/Artist.vue'
 import getArtists from './api'
 export default {
   name: 'app',
   data () {
     return {
-      artists: []
+      artists: [],
+       countries: [
+        { name: 'Argentina', value: 'argentina' },
+        { name: 'Colombia', value: 'colombia' },
+        { name: 'España', value: 'spain' },
+        { name: 'Venezuela', value: 'venezuela' },
+      ],
+      selectedCountry: 'venezuela'
     }
   },
-    mounted: function () {
+  components:{
+    Artist
+  },
+  methods:{
+    refreshArtists(){
     const self = this
-    getArtists()
-      .then(function (artists) {
-        self.artists = artists
-       
-      })
+      getArtists(this.selectedCountry)
+        .then(function (artists) {
+          self.artists = artists
+        
+        })
+    }
+  },
+    mounted(){
+      this.refreshArtists()
+  },
+  watch:{
+      selectedCountry() {
+      this.refreshArtists()
+    }
   }
 }
 </script>
