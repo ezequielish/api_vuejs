@@ -4,12 +4,14 @@
     h1 musicon
     select(v-model="selectedCountry")
       option(v-for="country in countries" v-bind:value="country.value") {{ country.name }}
+    loading(v-show="loading")
     ul
      artist(v-for="artist in artists" :artist="artist"  :key="artist.mbid")
 </template>
 
 <script>
 import Artist from './components/Artist.vue'
+import Loading from './components/Loading.vue'
 import getArtists from './api'
 export default {
   name: 'app',
@@ -22,19 +24,23 @@ export default {
         { name: 'España', value: 'spain' },
         { name: 'Venezuela', value: 'venezuela' },
       ],
-      selectedCountry: 'venezuela'
+      selectedCountry: 'venezuela',
+      loading: true
     }
   },
   components:{
-    Artist
+    Artist,
+    Loading
   },
   methods:{
     refreshArtists(){
     const self = this
+    this.loading = true;
+    this.artists = []
       getArtists(this.selectedCountry)
         .then(function (artists) {
-          self.artists = artists
-        
+          self.loading = false  
+          self.artists = artists         
         })
     }
   },
